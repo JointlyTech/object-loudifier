@@ -36,6 +36,7 @@ obj.$on('foo.*', (newValue) => {
 
 # ToDo
 
+- [ ] Refactor: Every 'reactive' name must become 'loud'
 - [x] Test
 - [x] $on con chiave vuota --> Sostituita con $on('\*');
 - [x] wildcard sul $on (Es. `$on('test.\*', () => {})`)

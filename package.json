@@ -1,5 +1,5 @@
 {
-  "name": "@jointly/r",
+  "name": "@jointly/object-loudifier",
   "private": false,
   "version": "0.0.1",
   "main": "dist/index.js",
@@ -25,7 +25,7 @@
     "dev": "jest --watch",
     "test": "jest --no-cache"
   },
-  "prepublish": "npm run build",
+  "prepare": "npm run build",
   "devDependencies": {
     "@types/jest": "^29.2.0",
     "@types/node": "^18.11.7",
@@ -50,7 +50,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/JointlyTech/r.git"
+    "url": "git://github.com/JointlyTech/object-loudifier.git"
   },
   "license": "MIT",
   "author": "Jointly <dev@jointly.pro>"
