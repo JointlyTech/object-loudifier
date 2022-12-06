@@ -1,7 +1,7 @@
 {
-  "name": "@cadienvan/npm-package-ts-scaffholding",
+  "name": "@jointly/r",
   "private": false,
-  "version": "0.0.2",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -49,8 +49,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/Cadienvan/npm-package-ts-scaffholding.git"
+    "url": "git://github.com/JointlyTech/r.git"
   },
   "license": "MIT",
-  "author": "Michael Di Prisco <cadienvan@gmail.com>"
+  "author": "Jointly <dev@jointly.pro>"
 }

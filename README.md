@@ -1,49 +1,43 @@
-# What is this?
+# What is it?
 
-A simple scaffholding tool for creating a new project to be published to npm.  
-It provides a build command that will compile your code to a CommonJS Node 14.16 target, allowing named imports for CommonJS packages inside ESM files.  
-The package contains a simple "hello world" based on TypeScript, built on esbuild, tested through Jest and linted with ESLint and Prettier.  
-It also provides a Husky pre-commit hook to run the linter and tests before committing.
+This is a library allowing to create reactive objects.
+Given an object, it will return a new object with the same properties but with the ability to react to changes in the original object.
 
-## What does it mean?
+# How does it work?
 
-If you try to run `npm run build` you will be able to import the `sayHello` function from the `index.js` file, both via `require` and `import` syntax.
+Just wrap the object in the `r` function.  
+The function expects just a single parameter, the object you want to make reactive.  
+You can then watch for changes in the object by using the `$on` method.  
+The function expects two parameters, the name of the property you want to watch and a callback function.  
+The callback function will be called every time the property changes.  
+The callback function will be called with the new value of the property as its first parameter.  
+You can also watch for changes in the whole object by using the `$on` method and providing an empty string as the first argument.
 
-### Importing via `require`
+# Other Info
+
+You can use wildcards to watch for changes in multiple properties.  
+For example, if you want to watch for changes in the `foo` and `bar` properties, you can use the following code:
 
 ```js
-const { sayHello } = require('my-package');
+const obj = r({ foo: 1, bar: 2 });
+obj.$on('*', (newValue) => {
+  console.log(newValue);
+});
 ```
 
-### Importing via `import`
+You can also use wildcards for nested properties.
 
 ```js
-import { sayHello } from 'my-package';
+const obj = r({ foo: { bar: 1 } });
+obj.$on('foo.*', (newValue) => {
+  console.log(newValue);
+});
 ```
 
-# Why?
+# ToDo
 
-I got tired of copying and pasting the same files over and over again.  
-This is a simple tool to create a new project with the basic files needed to publish to npm.
-
-# How can I personalize it?
-
-You can change the `package.json` file to your liking, bringing your own package name and description.  
-Please, remember to give me a star if you like the project!
-
-## How To Install?
-
-```bash
-git clone git://github.com/Cadienvan/npm-package-ts-scaffholding.git package_name
-cd package_name
-npm install
-```
-
-## What's Inside?
-
-- Typescript
-- Jest
-- Eslint
-- Prettier
-- Husky
-- Esbuild
+- [x] Test
+- [x] $on con chiave vuota --> Sostituita con $on('\*');
+- [x] wildcard sul $on (Es. `$on('test.\*', () => {})`)
+- [x] Prevent exposing private properties
+- [x] Test performance --> Less than 25ms for 10000 mutations

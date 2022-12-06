@@ -1,5 +1,1 @@
-import { HelloWorld } from './hello-world';
-
-export const sayHello = () => {
-  return HelloWorld;
-};
+export { r } from './lib';
