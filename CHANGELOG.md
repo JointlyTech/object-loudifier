@@ -1,3 +1,9 @@
+#### 1.0.1 (2022-12-12)
+
+##### Tests
+
+*  fixed tests ([0853e3ca](https://github.com/JointlyTech/object-loudifier/commit/0853e3ca676461210fe58f9954c0fe684197e095))
+
 ## 1.0.0 (2022-12-12)
 
 ##### Other Changes
