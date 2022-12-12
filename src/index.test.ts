@@ -2,9 +2,9 @@
 
 import { loudify } from './lib';
 
-it('should create a reactive object', () => {
+it('should create a loud object', () => {
   const obj = loudify({});
-  expect(obj.$isReactive).toBe(true);
+  expect(obj.$isLoud).toBe(true);
 });
 
 it('should throw if the object is not an object', () => {
@@ -29,13 +29,13 @@ it('should throw if the object contains a reserved property', () => {
   ).toThrow();
 });
 
-it('should create an r for every property of the object if an object itself', () => {
+it('should create a loud object for every property of the object if an object itself', () => {
   const obj = loudify({
     a: {
       b: 1
     }
   });
-  expect(obj.a.$isReactive).toBe(true);
+  expect(obj.a.$isLoud).toBe(true);
 });
 
 it('should $emit when a property is set', () => {
