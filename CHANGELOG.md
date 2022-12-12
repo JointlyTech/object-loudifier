@@ -1,3 +1,9 @@
+## 1.0.0 (2022-12-12)
+
+##### Other Changes
+
+*  changed exported function name + updated docs ([d48ae7f6](https://github.com/JointlyTech/object-loudifier/commit/d48ae7f68b3c086f52d43e030c630a5aa9e2354b))
+
 #### 0.0.3 (2022-12-12)
 
 ##### Chores
