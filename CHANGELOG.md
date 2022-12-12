@@ -1,3 +1,9 @@
+#### 0.0.3 (2022-12-12)
+
+##### Chores
+
+*  added commitlint ([1cb0852c](https://github.com/JointlyTech/object-loudifier/commit/1cb0852cb7c29b9390533e85cfea1cc642d8be94))
+
 #### 0.0.2 (2022-12-12)
 
 ##### Chores
