@@ -1,27 +1,27 @@
 // Create tests using Jest
 
-import { r } from './lib';
+import { loudify } from './lib';
 
 it('should create a reactive object', () => {
-  const obj = r({});
+  const obj = loudify({});
   expect(obj.$isReactive).toBe(true);
 });
 
 it('should throw if the object is not an object', () => {
-  expect(() => r(1)).toThrow();
+  expect(() => loudify(1)).toThrow();
 });
 
 it('should throw if the object is an array', () => {
-  expect(() => r([])).toThrow();
+  expect(() => loudify([])).toThrow();
 });
 
 it('should throw if the object is null', () => {
-  expect(() => r(null)).toThrow();
+  expect(() => loudify(null)).toThrow();
 });
 
 it('should throw if the object contains a reserved property', () => {
   expect(() =>
-    r({
+    loudify({
       $on: () => {
         return;
       }
@@ -30,7 +30,7 @@ it('should throw if the object contains a reserved property', () => {
 });
 
 it('should create an r for every property of the object if an object itself', () => {
-  const obj = r({
+  const obj = loudify({
     a: {
       b: 1
     }
@@ -39,7 +39,7 @@ it('should create an r for every property of the object if an object itself', ()
 });
 
 it('should $emit when a property is set', () => {
-  const obj = r({});
+  const obj = loudify({});
   const callback = jest.fn();
   obj.$on('a', callback);
   obj.a = 1;
@@ -47,7 +47,7 @@ it('should $emit when a property is set', () => {
 });
 
 it('should $emit when a new property, which is an object, is added and modified', () => {
-  const obj = r({});
+  const obj = loudify({});
   const callback = jest.fn();
   obj.$on('a', callback);
   obj.a = { b: { c: 1 } };
@@ -58,8 +58,8 @@ it('should $emit when a new property, which is an object, is added and modified'
   expect(callback).toBeCalledWith({ b: { c: 3 } });
 });
 
-it('should only emit once if you use $once', () => {
-  const obj = r({});
+it('should only $emit once if you use $once', () => {
+  const obj = loudify({});
   const callback = jest.fn();
   obj.$once('a', callback);
   obj.a = 1;
@@ -68,8 +68,8 @@ it('should only emit once if you use $once', () => {
   expect(callback).toBeCalledTimes(1);
 });
 
-it('should emit the correct anount of times when a wildcard is used', () => {
-  const obj = r({
+it('should $emit the correct anount of times when a wildcard is used', () => {
+  const obj = loudify({
     a: {
       b: {
         c: {
@@ -89,8 +89,8 @@ it('should emit the correct anount of times when a wildcard is used', () => {
   expect(callback).toBeCalledTimes(4);
 });
 
-it('should not emit in case I $off', () => {
-  const obj = r({});
+it('should not $emit in case I $off', () => {
+  const obj = loudify({});
   const callback = jest.fn();
   obj.$on('a', callback);
   obj.$off('a', callback);

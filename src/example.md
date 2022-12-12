@@ -1,9 +1,9 @@
 ```js
 import { performance } from 'perf_hooks';
-import { r } from '.';
+import { loudify } from '.';
 
-export default async () => {
-  const obj = r({
+(async () => {
+  const obj = loudify({
     a: {
       b: {
         c: {
@@ -22,7 +22,7 @@ export default async () => {
   });
   obj.a.b = 1;
   obj.a.b = 2;
-  const reactiveObj = r({
+  const loudObj = loudify({
     nest2: {
       nest3: {
         nest4: {
@@ -33,27 +33,27 @@ export default async () => {
       }
     }
   });
-  reactiveObj.$on('nest2.nest3.nest4.nest5.nest6', (value) => {
+  loudObj.$on('nest2.nest3.nest4.nest5.nest6', (value) => {
     console.log('FROM root  -->\t nest2.nest3.nest4.nest5.nest6', value);
   });
-  reactiveObj.nest2.nest3.$on('nest4.nest5.nest6', (value) => {
+  loudObj.nest2.nest3.$on('nest4.nest5.nest6', (value) => {
     console.log('FROM nest3 -->\t nest2.nest3.nest4.nest5.nest6', value);
   });
-  reactiveObj.nest2.nest3.nest4.nest5.nest6 = 'valorenest6modificato';
-  reactiveObj.laterNest2 = {
+  loudObj.nest2.nest3.nest4.nest5.nest6 = 'valorenest6modificato';
+  loudObj.laterNest2 = {
     laterNest3: {
       laterNest4: 'laterNest4Value'
     }
   };
-  reactiveObj.$on('laterNest2.laterNest3.laterNest4', (value) => {
+  loudObj.$on('laterNest2.laterNest3.laterNest4', (value) => {
     console.log('FROM root  -->\t laterNest2.laterNest3.laterNest4', value);
   });
-  reactiveObj.laterNest2.laterNest3.$on('laterNest4', (value) => {
+  loudObj.laterNest2.laterNest3.$on('laterNest4', (value) => {
     console.log('FROM nest3 -->\t laterNest2.laterNest3.laterNest4', value);
   });
-  reactiveObj.laterNest2.laterNest3.laterNest4 = 'laterNest4ValueModified';
+  loudObj.laterNest2.laterNest3.laterNest4 = 'laterNest4ValueModified';
   // Create a new reactive object, then listen for the * event.
-  const obj2 = r({});
+  const obj2 = loudify({});
   obj2.$on('*', (v) => {
     return;
   });
@@ -64,5 +64,5 @@ export default async () => {
   }
   const end = performance.now();
   console.log('10000 mutations took', end - start, 'ms');
-};
+})();
 ```

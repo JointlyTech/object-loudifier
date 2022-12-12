@@ -1,1 +1,1 @@
-export { r } from './lib';
+export { loudify } from './lib';

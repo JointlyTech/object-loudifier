@@ -3,9 +3,25 @@
 This is a library allowing to create reactive objects.
 Given an object, it will return a new object with the same properties but with the ability to react to changes in the original object.
 
+# How do I install it?
+
+You can install it by using the following command:
+
+```bash
+npm install @jointly/object-loudifier
+```
+
+# Tests
+
+You can run the tests by using the following command:
+
+```bash
+npm test
+```
+
 # How does it work?
 
-Just wrap the object in the `r` function.  
+Just wrap the object in the `loudify` function.  
 The function expects just a single parameter, the object you want to make reactive.  
 You can then watch for changes in the object by using the `$on` method.  
 The function expects two parameters, the name of the property you want to watch and a callback function.  
@@ -19,7 +35,7 @@ You can use wildcards to watch for changes in multiple properties.
 For example, if you want to watch for changes in the `foo` and `bar` properties, you can use the following code:
 
 ```js
-const obj = r({ foo: 1, bar: 2 });
+const obj = loudify({ foo: 1, bar: 2 });
 obj.$on('*', (newValue) => {
   console.log(newValue);
 });
@@ -28,7 +44,7 @@ obj.$on('*', (newValue) => {
 You can also use wildcards for nested properties.
 
 ```js
-const obj = r({ foo: { bar: 1 } });
+const obj = loudify({ foo: { bar: 1 } });
 obj.$on('foo.*', (newValue) => {
   console.log(newValue);
 });
@@ -36,9 +52,5 @@ obj.$on('foo.*', (newValue) => {
 
 # ToDo
 
-- [ ] Refactor: Every 'reactive' name must become 'loud'
-- [x] Test
-- [x] $on con chiave vuota --> Sostituita con $on('\*');
-- [x] wildcard sul $on (Es. `$on('test.\*', () => {})`)
-- [x] Prevent exposing private properties
-- [x] Test performance --> Less than 25ms for 10000 mutations
+- [ ] Add bubbling prevention
+- [ ] Analyze how to export the changed key in a wildcard listener.
