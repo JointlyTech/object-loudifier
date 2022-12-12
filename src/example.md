@@ -1,3 +1,4 @@
+```js
 import { performance } from 'perf_hooks';
 import { r } from '.';
 
@@ -64,3 +65,4 @@ export default async () => {
   const end = performance.now();
   console.log('10000 mutations took', end - start, 'ms');
 };
+```
