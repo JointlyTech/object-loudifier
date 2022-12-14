@@ -1,3 +1,29 @@
+### 1.1.0 (2022-12-14)
+
+##### Chores
+
+*  added benchmarks ([ee157fe0](https://github.com/JointlyTech/object-loudifier/commit/ee157fe07bdcfb15ff34005fd1c8f9d467c3b4be))
+*  added things to todo list ([923d6d58](https://github.com/JointlyTech/object-loudifier/commit/923d6d587f9df934ecedc9abcd237acc3f324f1d))
+*  typo fix ([86452201](https://github.com/JointlyTech/object-loudifier/commit/86452201d51e3ce31e595223a97be0f63e4ec7d3))
+
+##### Documentation Changes
+
+*  updated documentation refactoring some parts + explained bubbling order ([46527dc9](https://github.com/JointlyTech/object-loudifier/commit/46527dc9ef3b2a60af58edd76bd244304b01333b))
+
+##### New Features
+
+*  internal refactor of once + internal refactor of on to allow for more options ([7945bdb8](https://github.com/JointlyTech/object-loudifier/commit/7945bdb8c3056178c4d70e63d037d083578e6077))
+*  added bubbling prevention ([1c51d074](https://github.com/JointlyTech/object-loudifier/commit/1c51d074d3a8a9a7dda07422a6270af38c262397))
+
+##### Bug Fixes
+
+*  corrected infinite loop on ([11ba4c81](https://github.com/JointlyTech/object-loudifier/commit/11ba4c818a7c0921c127b18dc0786a6011c336a4))
+*  fixed test execution results ([daf19c3b](https://github.com/JointlyTech/object-loudifier/commit/daf19c3b9bd5bc09bca92f29e881592794f6b333))
+
+##### Other Changes
+
+*  added tests to check bubbling ordering ([4920167a](https://github.com/JointlyTech/object-loudifier/commit/4920167afaadbe8c9fb32ee41197373eb87e4049))
+
 #### 1.0.1 (2022-12-12)
 
 ##### Tests
