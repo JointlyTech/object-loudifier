@@ -52,7 +52,8 @@ obj.$on('foo.*', (newValue) => {
 
 # ToDo
 
-- [ ] Add bubbling prevention.
+- [x] Add bubbling prevention.
+- [ ] Better document the bubbling order.
 - [ ] Add tests to reach higher coverage.
 - [ ] Improve type checking.
 - [ ] Add infinite loop prevention.

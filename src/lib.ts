@@ -66,7 +66,8 @@ export const loudify = (
   loudObj.$parent = parent;
   loudObj.$propName = propName;
   loudObj.$listeners = {};
-  loudObj.$on = (prop, listener: Function, { preventBubbling = false }) => {
+  loudObj.$preventBubbling = false;
+  loudObj.$on = (prop, listener: Function, preventBubbling = false) => {
     // If preventBubbling is true, create a new listener that will prevent the event from bubbling
     if (preventBubbling) {
       const newListener = (...args) => {
@@ -96,7 +97,9 @@ export const loudify = (
   };
   loudObj.$emit = (prop: string, value: unknown) => {
     if (loudObj.$listeners[prop]) {
-      loudObj.$listeners[prop].forEach((listener: Function) => listener(value));
+      loudObj.$listeners[prop].forEach((listener: Function) =>
+        listener(value, prop)
+      );
     }
 
     // If the event was prevented from bubbling, return
