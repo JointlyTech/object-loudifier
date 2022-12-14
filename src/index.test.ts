@@ -98,7 +98,7 @@ it('should not emit in case I off', () => {
   expect(callback).not.toBeCalled();
 });
 
-it('should preventBubbling', async () => {
+it('should preventBubbling', () => {
   const obj = loudify({
     a: {
       b: {
@@ -111,4 +111,32 @@ it('should preventBubbling', async () => {
   obj.$on('a.b', callback, true);
   obj.a.b.c = 2;
   expect(callback).toBeCalledTimes(1);
+});
+
+it('should respect the bubbling order', () => {
+  const order: Array<number> = [];
+  const obj = loudify({
+    a: {
+      b: {
+        c: 1
+      }
+    }
+  });
+  const callback1 = function () {
+    order.push(1);
+  };
+
+  const callback2 = function () {
+    order.push(2);
+  };
+
+  const callback3 = function () {
+    order.push(3);
+  };
+
+  obj.a.b.$on('c', callback1);
+  obj.$on('a.b.c', callback2);
+  obj.$on('*', callback3);
+  obj.a.b.c = 2;
+  expect(order).toEqual([1, 2, 3]);
 });
