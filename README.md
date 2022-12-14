@@ -100,6 +100,13 @@ The bubbling order for the change emission is the following:
 
 The `$once` method is a shortcut for the `$on` method with the `once` option set to `true`.
 
+# Benchmarks
+
+You can run the benchmarks by using the following command:
+
+```bash
+npm run benchmark
+```
 
 # ToDo
 
