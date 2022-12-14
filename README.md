@@ -110,8 +110,8 @@ npm run benchmark
 
 # ToDo
 
+- [ ] Analyze how to export the changed key in a wildcard listener.
 - [ ] Add tests to reach higher coverage.
 - [ ] Improve type checking.
 - [ ] Add infinite loop prevention.
 - [ ] Analyze if needed - Add bubbling threshold (how many times a property can be changed before the event is not fired anymore) as a performance protection mechanism.
-- [ ] Analyze how to export the changed key in a wildcard listener.

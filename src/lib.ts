@@ -64,7 +64,7 @@ export const loudify = (
         value = loudify(value, target, prop);
       }
 
-      // If prop is a method, emit the event.
+      // If value is not a function, emit the event.
       if (typeof value !== 'function') {
         loudObj.$emit(prop, value, target);
       }
@@ -80,18 +80,19 @@ export const loudify = (
 
   loudObj.$on = (prop, listener: Function, options: Partial<Options> = {}) => {
     options = { ...defaultOptions, ...options };
+    const initialListener = listener;
     // If once is true, create a new listener that will remove itself after being called
     if (options.once) {
       const newListener = (...args) => {
-        loudObj.$off(prop, listener);
-        listener(...args);
+        initialListener(...args);
+        loudObj.$off(prop, newListener);
       };
       listener = newListener;
     }
     // If preventBubbling is true, create a new listener that will prevent the event from bubbling
     if (options.preventBubbling) {
       const newListener = (...args) => {
-        listener(...args);
+        initialListener(...args);
         loudObj.$preventBubbling = true;
       };
       listener = newListener;
@@ -125,11 +126,7 @@ export const loudify = (
     }
 
     if (loudObj.$parent)
-      loudObj.$parent.$emit(
-        `${loudObj.$propName}.${prop}`,
-        value,
-        loudObj.$parent
-      );
+      loudObj.$parent.$emit(`${loudObj.$propName}.${prop}`, value);
     if (!prop.includes('*')) {
       const propParts = prop.split('.');
       for (let i = propParts.length; i > 0; i--) {
