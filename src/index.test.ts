@@ -43,7 +43,7 @@ it('should emit when a property is set', () => {
   const callback = jest.fn();
   obj.$on('a', callback);
   obj.a = 1;
-  expect(callback).toBeCalledWith(1);
+  expect(callback).toBeCalledWith(1, 'a');
 });
 
 it('should emit when a new property, which is an object, is added and modified', () => {
@@ -51,11 +51,11 @@ it('should emit when a new property, which is an object, is added and modified',
   const callback = jest.fn();
   obj.$on('a', callback);
   obj.a = { b: { c: 1 } };
-  expect(callback).toBeCalledWith({ b: { c: 1 } });
+  expect(callback).toBeCalledWith({ b: { c: 1 } }, 'a');
   const callback2 = jest.fn();
   obj.$on('a.b', callback2);
   obj.a.b = { c: 3 };
-  expect(callback).toBeCalledWith({ b: { c: 3 } });
+  expect(callback).toBeCalledWith({ b: { c: 3 } }, 'a');
 });
 
 it('should only emit once if you use $once', () => {
@@ -64,7 +64,7 @@ it('should only emit once if you use $once', () => {
   obj.$once('a', callback);
   obj.a = 1;
   obj.a = 2;
-  expect(callback).toBeCalledWith(1);
+  expect(callback).toBeCalledWith(1, 'a');
   expect(callback).toBeCalledTimes(1);
 });
 
