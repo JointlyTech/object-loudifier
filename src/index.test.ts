@@ -68,7 +68,7 @@ it('should only $emit once if you use $once', () => {
   expect(callback).toBeCalledTimes(1);
 });
 
-it('should $emit the correct anount of times when a wildcard is used', () => {
+it('should $emit the correct amount of times when a wildcard is used', () => {
   const obj = loudify({
     a: {
       b: {
