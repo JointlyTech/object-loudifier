@@ -6,7 +6,8 @@ const RESERVED_PROPERTIES = new Set([
   '$isLoud',
   '$listeners',
   '$parent',
-  '$propName'
+  '$propName',
+  '$preventBubbling'
 ]);
 
 export const loudify = (
@@ -65,7 +66,16 @@ export const loudify = (
   loudObj.$parent = parent;
   loudObj.$propName = propName;
   loudObj.$listeners = {};
-  loudObj.$on = (prop, listener: Function) => {
+  loudObj.$on = (prop, listener: Function, { preventBubbling = false }) => {
+    // If preventBubbling is true, create a new listener that will prevent the event from bubbling
+    if (preventBubbling) {
+      const newListener = (...args) => {
+        listener(...args);
+        loudObj.$preventBubbling = true;
+      };
+      listener = newListener;
+    }
+
     // If prop is a symbol or is a prop of the loudObj, return, throw
     if (RESERVED_PROPERTIES.has(prop))
       throw new Error(
@@ -88,6 +98,13 @@ export const loudify = (
     if (loudObj.$listeners[prop]) {
       loudObj.$listeners[prop].forEach((listener: Function) => listener(value));
     }
+
+    // If the event was prevented from bubbling, return
+    if (loudObj.$preventBubbling) {
+      loudObj.$preventBubbling = false;
+      return;
+    }
+
     if (loudObj.$parent)
       loudObj.$parent.$emit(
         `${loudObj.$propName}.${prop}`,

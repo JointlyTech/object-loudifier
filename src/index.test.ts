@@ -97,3 +97,27 @@ it('should not $emit in case I $off', () => {
   obj.a = 1;
   expect(callback).not.toBeCalled();
 });
+
+it('should $preventBubbling', () => {
+  const obj = loudify({
+    a: {
+      b: {
+        c: 1
+      }
+    }
+  });
+  const callback = jest.fn();
+  obj.$on(
+    'a.b.c',
+    (value) => {
+      callback(value);
+      return true;
+    },
+    {
+      preventBubbling: true
+    }
+  );
+  obj.$on('a', callback);
+  obj.a = 1;
+  expect(callback).not.toBeCalled();
+});
