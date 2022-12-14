@@ -53,6 +53,7 @@ obj.$on('foo.*', (newValue) => {
 # ToDo
 
 - [x] Add bubbling prevention.
+- [x] Refactor $on third parameter to allow for more options.
 - [ ] Better document the bubbling order.
 - [ ] Add tests to reach higher coverage.
 - [ ] Improve type checking.

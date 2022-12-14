@@ -10,6 +10,16 @@ const RESERVED_PROPERTIES = new Set([
   '$preventBubbling'
 ]);
 
+type Options = {
+  preventBubbling: boolean;
+  once: boolean;
+};
+
+const defaultOptions = {
+  preventBubbling: false,
+  once: false
+};
+
 export const loudify = (
   obj: any,
   parent: Object | undefined = undefined,
@@ -67,9 +77,19 @@ export const loudify = (
   loudObj.$propName = propName;
   loudObj.$listeners = {};
   loudObj.$preventBubbling = false;
-  loudObj.$on = (prop, listener: Function, preventBubbling = false) => {
+
+  loudObj.$on = (prop, listener: Function, options: Partial<Options> = {}) => {
+    options = { ...defaultOptions, ...options };
+    // If once is true, create a new listener that will remove itself after being called
+    if (options.once) {
+      const newListener = (...args) => {
+        loudObj.$off(prop, listener);
+        listener(...args);
+      };
+      listener = newListener;
+    }
     // If preventBubbling is true, create a new listener that will prevent the event from bubbling
-    if (preventBubbling) {
+    if (options.preventBubbling) {
       const newListener = (...args) => {
         listener(...args);
         loudObj.$preventBubbling = true;
@@ -89,11 +109,7 @@ export const loudify = (
     loudObj.$listeners[prop].push(listener);
   };
   loudObj.$once = (prop: string, listener: Function) => {
-    const onceListener = (...args) => {
-      listener(...args);
-      loudObj.$off(prop, onceListener);
-    };
-    loudObj.$on(prop, onceListener);
+    loudObj.$on(prop, listener, { once: true });
   };
   loudObj.$emit = (prop: string, value: unknown) => {
     if (loudObj.$listeners[prop]) {
