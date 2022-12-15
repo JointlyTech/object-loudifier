@@ -1,3 +1,27 @@
+## 2.0.0 (2022-12-15)
+
+##### Chores
+
+*  fixed benchmark execution ([348edbea](https://github.com/JointlyTech/object-loudifier/commit/348edbea31f59e074ac5d7aa9e3f078f5c3efe1a))
+*  enforced type checking + exporting loud object type ([b61f21ad](https://github.com/JointlyTech/object-loudifier/commit/b61f21ad22dbac4e89ddf75828668d1be0c3ff66))
+
+##### Documentation Changes
+
+*  improved benchmark explanation ([dd1d2fac](https://github.com/JointlyTech/object-loudifier/commit/dd1d2fac61bd7ceb1ccb7bc85c2b1eec2483f3c9))
+*  improved bubbling priority explanation ([8c29488e](https://github.com/JointlyTech/object-loudifier/commit/8c29488e16378249439ac722b840cbdb8678eb5f))
+
+##### New Features
+
+*  added emittedmetadata + internal checks refactor + tests ([fb5d8277](https://github.com/JointlyTech/object-loudifier/commit/fb5d8277428bee6c328a109040de32ac7e1092a4))
+
+##### Other Changes
+
+*  allow nesting mechanism + internal refactor + loudify options parameter + tests ([7e7e1c35](https://github.com/JointlyTech/object-loudifier/commit/7e7e1c35a83418000b887f065b2bd1f69b26345f))
+
+##### Refactors
+
+*  internal naming changes ([41589031](https://github.com/JointlyTech/object-loudifier/commit/41589031af41d8faf8b5482924ba9ed1ee85841e))
+
 ### 1.1.0 (2022-12-14)
 
 ##### Chores
