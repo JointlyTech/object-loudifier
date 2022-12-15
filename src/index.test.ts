@@ -55,7 +55,7 @@ it('should emit when a property is set', () => {
   const callback = jest.fn();
   obj.$on('a', callback);
   obj.a = 1;
-  expect(callback).toBeCalledWith(1, 'a');
+  expect(callback).toBeCalledWith(1, 'a', expect.anything());
 });
 
 it('should emit when a new property, which is an object, is added and modified', () => {
@@ -63,11 +63,11 @@ it('should emit when a new property, which is an object, is added and modified',
   const callback = jest.fn();
   obj.$on('a', callback);
   obj.a = { b: { c: 1 } };
-  expect(callback).toBeCalledWith({ b: { c: 1 } }, 'a');
+  expect(callback).toBeCalledWith({ b: { c: 1 } }, 'a', expect.anything());
   const callback2 = jest.fn();
   obj.$on('a.b', callback2);
   obj.a.b = { c: 3 };
-  expect(callback).toBeCalledWith({ b: { c: 3 } }, 'a');
+  expect(callback).toBeCalledWith({ b: { c: 3 } }, 'a', expect.anything());
 });
 
 it('should only emit once if you use $once', () => {
@@ -76,7 +76,7 @@ it('should only emit once if you use $once', () => {
   obj.$once('a', callback);
   obj.a = 1;
   obj.a = 2;
-  expect(callback).toBeCalledWith(1, 'a');
+  expect(callback).toBeCalledWith(1, 'a', expect.anything());
   expect(callback).toBeCalledTimes(1);
 });
 
@@ -160,4 +160,42 @@ it('should respect the bubbling order', () => {
   obj.$on('*', callback3);
   obj.a.b.c = 2;
   expect(order).toEqual([1, 2, 3]);
+});
+
+it('should return the correct dirtiness information via metadata', () => {
+  const obj = loudify(
+    {
+      a: {
+        b: {
+          c: 1
+        }
+      }
+    },
+    { allowNesting: true }
+  );
+  obj.$on('*', (value, prop, metadata) => {
+    expect(metadata.isDirty).toBe(true);
+  });
+  obj.a.$on('*', (value, prop, metadata) => {
+    expect(metadata.isDirty).toBe(true);
+  });
+  obj.a.b.c = 2;
+
+  const obj2 = loudify(
+    {
+      a: {
+        b: {
+          c: 1
+        }
+      }
+    },
+    { allowNesting: true }
+  );
+  obj2.$on('*', (value, prop, metadata) => {
+    expect(metadata.isDirty).toBe(false);
+  });
+  obj2.a.$on('*', (value, prop, metadata) => {
+    expect(metadata.isDirty).toBe(false);
+  });
+  obj2.a.b.c = 1;
 });

@@ -28,6 +28,10 @@ const $onDefaultOptions = {
   once: false
 };
 
+type emittedMetadata = {
+  isDirty: boolean;
+};
+
 export const loudify = (
   obj: any,
   options: Partial<Options> = {},
@@ -67,6 +71,9 @@ export const loudify = (
 
   const loudObj = new Proxy(obj, {
     set: (target, prop, value) => {
+      const metadata: emittedMetadata = {
+        isDirty: target[prop] !== value
+      };
       target[prop] = value;
 
       // If prop is a symbol or is a prop of the loudObj, return, nothing to do.
@@ -80,7 +87,7 @@ export const loudify = (
 
       // If value is not a function, emit the event.
       if (typeof value !== 'function') {
-        loudObj.$emit(prop, value, target);
+        loudObj.$emit(prop, value, metadata);
       }
       return true;
     }
@@ -93,10 +100,22 @@ export const loudify = (
   loudObj.$preventBubbling = false;
 
   loudObj.$on = (
-    prop,
+    prop: unknown,
     listener: Function,
     options: Partial<$onOptions> = {}
   ) => {
+    // If prop is not a string, throw
+    if (typeof prop !== 'string') {
+      throw new Error('The first argument to $on() must be a string');
+    }
+
+    // If prop is a reserved property, throw
+    if (RESERVED_PROPERTIES.has(prop)) {
+      throw new Error(
+        `Cannot listen to ${prop} as it is a reserved property and could potentially create an infinite loop.`
+      );
+    }
+
     options = { ...$onDefaultOptions, ...options };
     const initialListener = listener;
     // If once is true, create a new listener that will remove itself after being called
@@ -116,12 +135,6 @@ export const loudify = (
       listener = newListener;
     }
 
-    // If prop is a symbol or is a prop of the loudObj, return, throw
-    if (RESERVED_PROPERTIES.has(prop))
-      throw new Error(
-        `Cannot listen to ${prop} as it is a reserved property and could potentially create an infinite loop.`
-      );
-
     if (!loudObj.$listeners[prop]) {
       loudObj.$listeners[prop] = [];
     }
@@ -130,10 +143,10 @@ export const loudify = (
   loudObj.$once = (prop: string, listener: Function) => {
     loudObj.$on(prop, listener, { once: true });
   };
-  loudObj.$emit = (prop: string, value: unknown) => {
+  loudObj.$emit = (prop: string, value: unknown, metadata: emittedMetadata) => {
     if (loudObj.$listeners[prop]) {
       loudObj.$listeners[prop].forEach((listener: Function) =>
-        listener(value, prop)
+        listener(value, prop, metadata)
       );
     }
 
@@ -144,15 +157,19 @@ export const loudify = (
     }
 
     if (loudObj.$parent)
-      loudObj.$parent.$emit(`${loudObj.$propName}.${prop}`, value);
+      loudObj.$parent.$emit(`${loudObj.$propName}.${prop}`, value, metadata);
     if (!prop.includes('*')) {
       const propParts = prop.split('.');
       for (let i = propParts.length; i > 0; i--) {
         const wildcardProp = propParts.slice(0, i).join('.') + '.*';
         if (loudObj.$listeners[wildcardProp])
-          loudObj.$emit(`${propParts.slice(0, i).join('.')}.*`, value);
+          loudObj.$emit(
+            `${propParts.slice(0, i).join('.')}.*`,
+            value,
+            metadata
+          );
       }
-      if (loudObj.$listeners['*']) loudObj.$emit('*', value);
+      if (loudObj.$listeners['*']) loudObj.$emit('*', value, metadata);
     }
   };
   loudObj.$off = (prop: string, listener: Function) => {
