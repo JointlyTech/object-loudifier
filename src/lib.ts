@@ -151,8 +151,8 @@ export const loudify = (
   };
   loudObj.$emit = (prop: string, value: unknown, metadata: emittedMetadata) => {
     if (loudObj.$listeners[prop]) {
-      loudObj.$listeners[prop].forEach((listener: ListenerFn) =>
-        listener(value, prop, metadata)
+      loudObj.$listeners[prop].forEach((listen: ListenerFn) =>
+        listen(value, prop, metadata)
       );
     }
 
@@ -165,17 +165,13 @@ export const loudify = (
     if (loudObj.$parent)
       loudObj.$parent.$emit(`${loudObj.$propName}.${prop}`, value, metadata);
     if (!prop.includes('*')) {
-      const propParts = prop.split('.');
-      for (let i = propParts.length; i > 0; i--) {
-        const wildcardProp = propParts.slice(0, i).join('.') + '.*';
-        if (loudObj.$listeners[wildcardProp])
-          loudObj.$emit(
-            `${propParts.slice(0, i).join('.')}.*`,
-            value,
-            metadata
-          );
-      }
-      if (loudObj.$listeners['*']) loudObj.$emit('*', value, metadata);
+      emitWildcardEventForEachParentMatchingExpression(
+        prop,
+        loudObj.$listeners,
+        loudObj.$emit,
+        value,
+        metadata
+      );
     }
   };
   loudObj.$off = (prop: string, listener: ListenerFn) => {
@@ -213,3 +209,18 @@ export type LoudObject<T> = T & {
   $listeners: Record<string, ListenerFn[]>;
   $preventBubbling: boolean;
 };
+function emitWildcardEventForEachParentMatchingExpression(
+  prop: string,
+  $listeners: LoudObject<unknown>['$listeners'],
+  $emit: LoudObject<unknown>['$emit'],
+  value: unknown,
+  metadata: emittedMetadata
+) {
+  const propParts = prop.split('.');
+  for (let i = propParts.length; i > 0; i--) {
+    const wildcardProp = propParts.slice(0, i).join('.') + '.*';
+    if ($listeners[wildcardProp])
+      $emit(`${propParts.slice(0, i).join('.')}.*`, value, metadata);
+  }
+  if ($listeners['*']) $emit('*', value, metadata);
+}
