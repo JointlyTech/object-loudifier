@@ -11,20 +11,31 @@ const RESERVED_PROPERTIES = new Set([
 ]);
 
 type Options = {
+  allowNesting: boolean;
+};
+
+const defaultOptions = {
+  allowNesting: false
+};
+
+type $onOptions = {
   preventBubbling: boolean;
   once: boolean;
 };
 
-const defaultOptions = {
+const $onDefaultOptions = {
   preventBubbling: false,
   once: false
 };
 
 export const loudify = (
   obj: any,
+  options: Partial<Options> = {},
   parent: Object | undefined = undefined,
   propName: string | undefined = undefined
 ) => {
+  options = { ...defaultOptions, ...options };
+
   // If the object is not an object, throw
   if (typeof obj !== 'object' || Array.isArray(obj) || obj === null) {
     throw new Error('The object passed to loudify() must be an object');
@@ -45,12 +56,15 @@ export const loudify = (
     return obj;
   }
 
-  // Create an r for every property of the object if an object itself
-  Object.keys(obj).forEach((key) => {
-    if (typeof obj[key] === 'object') {
-      obj[key] = loudify(obj[key], obj, key);
-    }
-  });
+  // Create a loud object for every property of the object if an object itself
+  if (options.allowNesting) {
+    Object.keys(obj).forEach((key) => {
+      if (typeof obj[key] === 'object') {
+        obj[key] = loudify(obj[key], options, obj, key);
+      }
+    });
+  }
+
   const loudObj = new Proxy(obj, {
     set: (target, prop, value) => {
       target[prop] = value;
@@ -61,7 +75,7 @@ export const loudify = (
 
       // If value is an object, create an r for it.
       if (typeof value === 'object') {
-        value = loudify(value, target, prop);
+        value = loudify(value, options, target, prop);
       }
 
       // If value is not a function, emit the event.
@@ -78,8 +92,12 @@ export const loudify = (
   loudObj.$listeners = {};
   loudObj.$preventBubbling = false;
 
-  loudObj.$on = (prop, listener: Function, options: Partial<Options> = {}) => {
-    options = { ...defaultOptions, ...options };
+  loudObj.$on = (
+    prop,
+    listener: Function,
+    options: Partial<$onOptions> = {}
+  ) => {
+    options = { ...$onDefaultOptions, ...options };
     const initialListener = listener;
     // If once is true, create a new listener that will remove itself after being called
     if (options.once) {

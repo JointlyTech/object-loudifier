@@ -59,13 +59,13 @@ obj.$on('foo.*', (newValue) => {
 ## Listener options
 
 You can pass a third parameter to the `$on` method, which is an object with the following properties:
-- `bubbling` - A boolean indicating if bubbling should be prevented. Default is `false`.
+- `preventBubbling` - A boolean indicating if bubbling should be prevented. Default is `false`.
 - `once` - A boolean indicating if the listener should be called only once. Default is `false`.
 
 ```js
 obj.$on('foo.bar', (newValue) => {
   console.log(newValue);
-}, { bubbling: false, once: true });
+}, { preventBubbling: false, once: true });
 ```
 
 ### Bubbling
@@ -110,6 +110,10 @@ npm run benchmark
 
 # ToDo
 
+- [ ] Test code coverage with babel instead of v8.
+- [ ] Analyze isDirty mechanism.
+- [ ] Better explain benchmarks.  
+- [ ] Better explain bubbling priority.
 - [ ] Analyze how to export the changed key in a wildcard listener.
 - [ ] Add tests to reach higher coverage.
 - [ ] Improve type checking.

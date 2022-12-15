@@ -29,13 +29,25 @@ it('should throw if the object contains a reserved property', () => {
   ).toThrow();
 });
 
-it('should create a loud object for every property of the object if an object itself', () => {
+it('should create a loud object for every property of the object', () => {
+  const obj = loudify(
+    {
+      a: {
+        b: 1
+      }
+    },
+    { allowNesting: true }
+  );
+  expect(obj.a.$isLoud).toBe(true);
+});
+
+it('should not create a loud object for every property of the object if allowNesting is false', () => {
   const obj = loudify({
     a: {
       b: 1
     }
   });
-  expect(obj.a.$isLoud).toBe(true);
+  expect(obj.a.$isLoud).toBe(undefined);
 });
 
 it('should emit when a property is set', () => {
@@ -69,15 +81,18 @@ it('should only emit once if you use $once', () => {
 });
 
 it('should emit the correct amount of times when a wildcard is used', () => {
-  const obj = loudify({
-    a: {
-      b: {
-        c: {
-          d: 1
+  const obj = loudify(
+    {
+      a: {
+        b: {
+          c: {
+            d: 1
+          }
         }
       }
-    }
-  });
+    },
+    { allowNesting: true }
+  );
   const callback = jest.fn();
   obj.$on('*', callback);
   obj.a.b.c.d = 2;
@@ -99,13 +114,16 @@ it('should not emit in case I off', () => {
 });
 
 it('should preventBubbling', () => {
-  const obj = loudify({
-    a: {
-      b: {
-        c: 1
+  const obj = loudify(
+    {
+      a: {
+        b: {
+          c: 1
+        }
       }
-    }
-  });
+    },
+    { allowNesting: true }
+  );
   const callback = jest.fn();
   obj.$on('a.b.c', callback);
   obj.$on('a.b', callback, true);
@@ -115,13 +133,16 @@ it('should preventBubbling', () => {
 
 it('should respect the bubbling order', () => {
   const order: Array<number> = [];
-  const obj = loudify({
-    a: {
-      b: {
-        c: 1
+  const obj = loudify(
+    {
+      a: {
+        b: {
+          c: 1
+        }
       }
-    }
-  });
+    },
+    { allowNesting: true }
+  );
   const callback1 = function () {
     order.push(1);
   };
