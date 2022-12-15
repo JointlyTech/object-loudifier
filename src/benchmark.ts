@@ -8,7 +8,7 @@ const iterations = 100000;
 console.log('Benchmarking loudify...');
 console.log(`Iterations: ${iterations}`);
 
-/** BENCHMARK #1 - Simple object assign */
+/** BENCHMARK #1 - Simple object assignment */
 console.log('Benchmark #1');
 (() => {
   // Create an object
@@ -42,7 +42,7 @@ console.log('Benchmark #1');
   console.log(`Time taken (with loudify): ${end - start}ms`);
 })();
 
-/** BENCHMARK #2 - Object nested assign */
+/** BENCHMARK #2 - Object nested assignment */
 console.log('Benchmark #2');
 (() => {
   // Create an object
@@ -60,7 +60,7 @@ console.log('Benchmark #2');
 
 (() => {
   // Create a loud object
-  const obj = loudify({ a: { b: 0 } });
+  const obj = loudify({ a: { b: 0 } }, { allowNesting: true });
 
   obj.$on('a.b', () => {
     return;
@@ -76,7 +76,7 @@ console.log('Benchmark #2');
   console.log(`Time taken (with loudify): ${end - start}ms`);
 })();
 
-/** BENCHMARK #3 - Object nested assign with wildcard */
+/** BENCHMARK #3 - Object nested assignment with wildcard */
 console.log('Benchmark #3');
 (() => {
   // Create an object
@@ -94,7 +94,7 @@ console.log('Benchmark #3');
 
 (() => {
   // Create a loud object
-  const obj = loudify({ a: { b: 0 } });
+  const obj = loudify({ a: { b: 0 } }, { allowNesting: true });
 
   obj.$on('*', () => {
     return;
@@ -110,7 +110,7 @@ console.log('Benchmark #3');
   console.log(`Time taken (with loudify): ${end - start}ms`);
 })();
 
-/** BENCHMARK #4 - Object nested assign with wildcard and multiple listeners */
+/** BENCHMARK #4 - Object nested assignment with wildcard and multiple listeners */
 console.log('Benchmark #4');
 (() => {
   // Create an object
@@ -128,7 +128,7 @@ console.log('Benchmark #4');
 
 (() => {
   // Create a loud object
-  const obj = loudify({ a: { b: 0 } });
+  const obj = loudify({ a: { b: 0 } }, { allowNesting: true });
 
   obj.$on('*', () => {
     return;
@@ -160,7 +160,7 @@ console.log('Benchmark #4');
   console.log(`Time taken (with loudify): ${end - start}ms`);
 })();
 
-/** BENCHMARK #5 - Object assign with multiple nested properties */
+/** BENCHMARK #5 - Object assignment with multiple nested properties */
 console.log('Benchmark #5');
 (() => {
   // Create an object
@@ -180,7 +180,10 @@ console.log('Benchmark #5');
 
 (() => {
   // Create a loud object
-  const obj = loudify({ a: { b: 0 }, c: { d: 0 }, e: { f: { g: { h: 1 } } } });
+  const obj = loudify(
+    { a: { b: 0 }, c: { d: 0 }, e: { f: { g: { h: 1 } } } },
+    { allowNesting: true }
+  );
 
   obj.$on('a.b', () => {
     return;
