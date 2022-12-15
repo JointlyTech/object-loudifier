@@ -91,10 +91,39 @@ obj.$on('foo', (newValue) => {
 
 #### Bubbling priority
 
-The bubbling order for the change emission is the following:
-1. The property listener (Considering a change in `obj.a.b.c`: `$obj.a.b.on('c')`)
-2. The parent listener (Considering a change in `obj.a.b.c`: `$obj.on('a.b.c')`)
-3. The wildcard listener (Considering a change in `obj.a.b.c`: `$obj.on('a.b.*`)`)
+The event emission order is the following:
+1. The property listeners are called.
+2. The parent listeners are called.
+3. The wildcard listeners are called using the following sub-order:
+    1. The property listeners are called.
+    2. The parent listeners are called.
+
+Considering the following example:
+  
+  ```js
+  const obj = loudify({ foo: { bar: 1 } }, { allowNesting: true });
+  obj.foo.$on('bar', (newValue) => {
+    console.log('foo->bar');
+  });
+  obj.$on('*', (newValue) => {
+    console.log('*');
+  });
+  obj.$on('foo.*', (newValue) => {
+    console.log('foo.*');
+  });
+  obj.$on('foo.bar', (newValue) => {
+    console.log('foo.bar');
+  });
+  ```
+
+The following output will be printed:
+
+```bash
+foo->bar
+foo.bar
+foo.*
+*
+```
 
 ### Once
 
@@ -110,9 +139,9 @@ npm run benchmark
 
 # ToDo
 
+- [ ] Indicate better the "allowNesting".
 - [ ] Test code coverage with babel instead of v8.
 - [ ] Better explain benchmarks.  
-- [ ] Better explain bubbling priority.
 - [ ] Analyze how to export the changed key in a wildcard listener.
 - [ ] Add tests to reach higher coverage.
 - [ ] Add infinite loop prevention.
