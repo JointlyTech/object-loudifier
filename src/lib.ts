@@ -32,12 +32,18 @@ type emittedMetadata = {
   isDirty: boolean;
 };
 
+type ListenerFn = (
+  value?: unknown,
+  prop?: string,
+  metadata?: emittedMetadata
+) => void;
+
 export const loudify = (
   obj: any,
   options: Partial<Options> = {},
   parent: Object | undefined = undefined,
   propName: string | undefined = undefined
-) => {
+): LoudObject<typeof obj> => {
   options = { ...defaultOptions, ...options };
 
   // If the object is not an object, throw
@@ -96,12 +102,12 @@ export const loudify = (
   loudObj.$isLoud = true;
   loudObj.$parent = parent;
   loudObj.$propName = propName;
-  loudObj.$listeners = {};
+  loudObj.$listeners = {} as Record<string, ListenerFn[]>;
   loudObj.$preventBubbling = false;
 
   loudObj.$on = (
     prop: unknown,
-    listener: Function,
+    listener: ListenerFn,
     options: Partial<$onOptions> = {}
   ) => {
     // If prop is not a string, throw
@@ -120,7 +126,7 @@ export const loudify = (
     const initialListener = listener;
     // If once is true, create a new listener that will remove itself after being called
     if (options.once) {
-      const newListener = (...args) => {
+      const newListener = (...args: unknown[]) => {
         initialListener(...args);
         loudObj.$off(prop, newListener);
       };
@@ -128,7 +134,7 @@ export const loudify = (
     }
     // If preventBubbling is true, create a new listener that will prevent the event from bubbling
     if (options.preventBubbling) {
-      const newListener = (...args) => {
+      const newListener = (...args: unknown[]) => {
         initialListener(...args);
         loudObj.$preventBubbling = true;
       };
@@ -140,12 +146,12 @@ export const loudify = (
     }
     loudObj.$listeners[prop].push(listener);
   };
-  loudObj.$once = (prop: string, listener: Function) => {
+  loudObj.$once = (prop: string, listener: ListenerFn) => {
     loudObj.$on(prop, listener, { once: true });
   };
   loudObj.$emit = (prop: string, value: unknown, metadata: emittedMetadata) => {
     if (loudObj.$listeners[prop]) {
-      loudObj.$listeners[prop].forEach((listener: Function) =>
+      loudObj.$listeners[prop].forEach((listener: ListenerFn) =>
         listener(value, prop, metadata)
       );
     }
@@ -172,10 +178,10 @@ export const loudify = (
       if (loudObj.$listeners['*']) loudObj.$emit('*', value, metadata);
     }
   };
-  loudObj.$off = (prop: string, listener: Function) => {
+  loudObj.$off = (prop: string, listener: ListenerFn) => {
     if (loudObj.$listeners[prop]) {
       loudObj.$listeners[prop] = loudObj.$listeners[prop].filter(
-        (l: Function) => l !== listener
+        (l: ListenerFn) => l !== listener
       );
     }
   };
@@ -189,4 +195,21 @@ export const loudify = (
   });
 
   return loudObj;
+};
+
+// Extract the loudify type
+export type LoudObject<T> = T & {
+  $isLoud: true;
+  $on: (
+    prop: string,
+    listener: ListenerFn,
+    options: Partial<$onOptions>
+  ) => void;
+  $once: (prop: string, listener: ListenerFn) => void;
+  $emit: (prop: string, value: unknown, metadata: emittedMetadata) => void;
+  $off: (prop: string, listener: ListenerFn) => void;
+  $parent?: LoudObject<any>;
+  $propName?: string;
+  $listeners: Record<string, ListenerFn[]>;
+  $preventBubbling: boolean;
 };
