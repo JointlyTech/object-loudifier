@@ -50,7 +50,7 @@ obj.$on('*', (newValue) => {
 You can also use wildcards for nested properties.
 
 ```js
-const obj = loudify({ foo: { bar: 1 } });
+const obj = loudify({ foo: { bar: 1 } }, { allowNesting: true });
 obj.$on('foo.*', (newValue) => {
   console.log(newValue);
 });
@@ -74,7 +74,7 @@ By default, the `$on` method will bubble the changes to the parent object.
 For example, if you have the following object:
 
 ```js
-const obj = loudify({ foo: { bar: 1 } });
+const obj = loudify({ foo: { bar: 1 } }, { allowNesting: true });
 ```
 
 And you watch for changes in the `foo.bar` property and in the `foo` property, you will get notified in both cases.
@@ -137,12 +137,25 @@ You can run the benchmarks by using the following command:
 npm run benchmark
 ```
 
+Tested on a MacBook Pro M1 Max (Retina, 16-inch, 2021) with 32GB of RAM.  
+The results are in milliseconds.  
+The results are the average of 100000 runs.  
+
+| Benchmark | Without loudify | With loudify | Notes |
+| --- | --- | --- | --- |
+| 1 | 1.73 | 55.72 | Simple object assignment |
+| 2 | 1.38 | 144.11 | Object nested assignment |
+| 3 | 1.51 | 155.05 | Object nested assignment with wildcard |
+| 4 | 1.57 | 244.63 | Object nested assignment with wildcard and multiple listeners |
+| 5 | 1.54 | 721.68 | Object assignment with multiple nested properties |
+
+Even if the benchmarks show a big difference with a native object, yet the library is capable of easily handling tens of thousands of changes per second.  
+
+In a real-case scenario, reaching milions of changes per second is possible (As in Benchmark #1).
+
 # ToDo
 
 - [ ] Indicate better the "allowNesting".
 - [ ] Test code coverage with babel instead of v8.
-- [ ] Better explain benchmarks.  
 - [ ] Analyze how to export the changed key in a wildcard listener.
-- [ ] Add tests to reach higher coverage.
 - [ ] Add infinite loop prevention.
-- [ ] Analyze if needed - Add bubbling threshold (how many times a property can be changed before the event is not fired anymore) as a performance protection mechanism.
