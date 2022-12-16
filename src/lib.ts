@@ -14,7 +14,7 @@ type Options = {
   allowNesting: boolean;
 };
 
-const defaultOptions = {
+const defaultOptions: Options = {
   allowNesting: false
 };
 
@@ -23,7 +23,7 @@ type $onOptions = {
   once: boolean;
 };
 
-const $onDefaultOptions = {
+const $onDefaultOptions: $onOptions = {
   preventBubbling: false,
   once: false
 };
