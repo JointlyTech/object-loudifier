@@ -208,3 +208,44 @@ console.log('Benchmark #5');
   const end = performance.now();
   console.log(`Time taken (with loudify): ${end - start}ms`);
 })();
+
+/** BENCHMARK #6 - Object assignment with multiple nested properties and wildcard */
+console.log('Benchmark #6');
+(() => {
+  // Create an object
+  const obj = { a: { b: 0 }, c: { d: 0 }, e: { f: { g: { h: 1 } } } };
+
+  const start = performance.now();
+  // Benchmark re-assigning obj.a.b `iterations` times
+  for (let i = 0; i < iterations; i++) {
+    obj.a.b = i;
+    obj.c.d = i;
+    obj.e.f.g.h = i;
+  }
+
+  const end = performance.now();
+  console.log(`Time taken (without loudify): ${end - start}ms`);
+})();
+
+(() => {
+  // Create a loud object
+  const obj = loudify(
+    { a: { b: 0 }, c: { d: 0 }, e: { f: { g: { h: 1 } } } },
+    { allowNesting: true }
+  );
+
+  obj.$on('*', () => {
+    return;
+  });
+
+  const start = performance.now();
+  // Benchmark re-assigning obj.a.b `iterations` times
+  for (let i = 0; i < iterations; i++) {
+    obj.a.b = i;
+    obj.c.d = i;
+    obj.e.f.g.h = i;
+  }
+
+  const end = performance.now();
+  console.log(`Time taken (with loudify): ${end - start}ms`);
+})();
