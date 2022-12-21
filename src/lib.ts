@@ -109,7 +109,7 @@ export const loudify = (
   loudObj.$on = (
     prop: unknown,
     listener: ListenerFn,
-    options: Partial<$onOptions> = {}
+    onOptions: Partial<$onOptions> = {}
   ) => {
     // If prop is not a string, throw
     if (typeof prop !== 'string') {
@@ -123,10 +123,18 @@ export const loudify = (
       );
     }
 
-    options = { ...$onDefaultOptions, ...options };
+    onOptions = { ...$onDefaultOptions, ...onOptions };
+
+    // If propr contains a wildcard and allowNesting is false, throw
+    if (prop.includes('.') && !options.allowNesting) {
+      throw new Error(
+        'Cannot listen to a nested event if allowNesting is false'
+      );
+    }
+
     const initialListener = listener;
     // If once is true, create a new listener that will remove itself after being called
-    if (options.once) {
+    if (onOptions.once) {
       const newListener = (...args: unknown[]) => {
         initialListener(...args);
         loudObj.$off(prop, newListener);
@@ -134,7 +142,7 @@ export const loudify = (
       listener = newListener;
     }
     // If preventBubbling is true, create a new listener that will prevent the event from bubbling
-    if (options.preventBubbling) {
+    if (onOptions.preventBubbling) {
       const newListener = (...args: unknown[]) => {
         initialListener(...args);
         loudObj.$preventBubbling = true;
