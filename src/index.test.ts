@@ -199,3 +199,26 @@ it('should return the correct dirtiness information via metadata', () => {
   });
   obj2.a.b.c = 1;
 });
+
+it('should return correct property name when using wildcards', () => {
+  const obj = loudify(
+    {
+      a: {
+        b: {
+          c: 1
+        }
+      }
+    },
+    { allowNesting: true }
+  );
+  obj.$on('*', (value, prop, metadata) => {
+    expect(prop).toBe('a.b.c');
+  });
+  obj.a.$on('*', (value, prop, metadata) => {
+    expect(prop).toBe('b.c');
+  });
+  obj.a.b.$on('*', (value, prop, metadata) => {
+    expect(prop).toBe('c');
+  });
+  obj.a.b.c = 2;
+});
