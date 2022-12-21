@@ -1,3 +1,32 @@
+### 2.1.0 (2022-12-21)
+
+##### Chores
+
+*  added shortcut for coverage command and removed redundant conf from jest config ([04aeacc1](https://github.com/JointlyTech/object-loudifier/commit/04aeacc1dc68a06d7fc04a4a47de947807649323))
+*  lint ([59fc14c5](https://github.com/JointlyTech/object-loudifier/commit/59fc14c5d39767a5e6c96c97de056d4b4bfb2765))
+*  better type enforcing ([5a88f919](https://github.com/JointlyTech/object-loudifier/commit/5a88f9191cc8e5ecbdf09b65663ad2f8aa1f4f25))
+
+##### Documentation Changes
+
+*  added benchmark n. 6 ([aad26879](https://github.com/JointlyTech/object-loudifier/commit/aad268791da57ab6239277a7307a73341a9b9a2d))
+
+##### Bug Fixes
+
+*  emit now return correct propName even if used with wildcards ([c37951c8](https://github.com/JointlyTech/object-loudifier/commit/c37951c897c00d1a217013b66c5f19e424af05e0))
+
+##### Other Changes
+
+* //github.com/JointlyTech/object-loudifier ([a4edda6b](https://github.com/JointlyTech/object-loudifier/commit/a4edda6b808a15d70c3581ea35012759f014f427))
+
+##### Refactors
+
+*  changed name for onOptions for better readability ([725a5416](https://github.com/JointlyTech/object-loudifier/commit/725a5416bc0621c6755c442bcf75878591e5a14e))
+
+##### Tests
+
+*  fixed some test to use latest features + adding test to improve code coverage ([4e7f3370](https://github.com/JointlyTech/object-loudifier/commit/4e7f33709cdae55e9e864d8699712f4ed7c0e73d))
+*  added wildcard prop test ([d2cd44d8](https://github.com/JointlyTech/object-loudifier/commit/d2cd44d84dcc5c7fc661d64add593fd82bc0e96a))
+
 ## 2.0.0 (2022-12-15)
 
 ##### Chores
