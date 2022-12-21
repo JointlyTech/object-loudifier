@@ -227,10 +227,10 @@ function emitWildcardEventForEachParentMatchingExpression(
       });
     }
   }
-  if ($listeners['*']){
+  if ($listeners['*']) {
     $emit('*', value, {
       ...metadata,
       originalPropertyName: prop
     });
-  } 
+  }
 }

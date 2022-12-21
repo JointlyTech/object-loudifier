@@ -211,13 +211,13 @@ it('should return correct property name when using wildcards', () => {
     },
     { allowNesting: true }
   );
-  obj.$on('*', (value, prop, metadata) => {
+  obj.$on('*', (value, prop) => {
     expect(prop).toBe('a.b.c');
   });
-  obj.a.$on('*', (value, prop, metadata) => {
+  obj.a.$on('*', (value, prop) => {
     expect(prop).toBe('b.c');
   });
-  obj.a.b.$on('*', (value, prop, metadata) => {
+  obj.a.b.$on('*', (value, prop) => {
     expect(prop).toBe('c');
   });
   obj.a.b.c = 2;
