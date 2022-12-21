@@ -59,7 +59,7 @@ it('should emit when a property is set', () => {
 });
 
 it('should emit when a new property, which is an object, is added and modified', () => {
-  const obj = loudify({});
+  const obj = loudify({}, { allowNesting: true });
   const callback = jest.fn();
   obj.$on('a', callback);
   obj.a = { b: { c: 1 } };
@@ -125,8 +125,10 @@ it('should preventBubbling', () => {
     { allowNesting: true }
   );
   const callback = jest.fn();
-  obj.$on('a.b.c', callback);
-  obj.$on('a.b', callback, true);
+  obj.$on('a.b.c', callback, {
+    preventBubbling: true
+  });
+  obj.$on('a.b.*', callback);
   obj.a.b.c = 2;
   expect(callback).toBeCalledTimes(1);
 });
@@ -221,4 +223,31 @@ it('should return correct property name when using wildcards', () => {
     expect(prop).toBe('c');
   });
   obj.a.b.c = 2;
+});
+
+it('should return the object if already loud', () => {
+  const obj = loudify({});
+  const loudObj = loudify(obj);
+  expect(loudObj).toBe(obj);
+});
+
+it('should throw exception when calling on with a non-string', () => {
+  const obj = loudify({});
+  expect(() => {
+    obj.$on(1 as any, () => { return; });
+  }).toThrow();
+});
+
+it('should throw exception when calling on with a reserved property', () => {
+  const obj = loudify({});
+  expect(() => {
+    obj.$on('$on', () => { return; });
+  }).toThrow();
+});
+
+it('should throw exception when calling a nested listener while allowNesting is false', () => {
+  const obj = loudify({});
+  expect(() => {
+    obj.$on('a.b', () => { return; });
+  }).toThrow();
 });

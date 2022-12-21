@@ -152,10 +152,3 @@ The results are the average of 100000 runs.
 Even if the benchmarks show a big difference with a native object, yet the library is capable of easily handling tens of thousands of changes per second.  
 
 In a real-case scenario, reaching milions of changes per second is possible (As in Benchmark #1).
-
-# ToDo
-
-- [ ] Indicate better the "allowNesting".
-- [ ] Test code coverage with babel instead of v8.
-- [ ] Analyze how to export the changed key in a wildcard listener.
-- [ ] Add infinite loop prevention.
