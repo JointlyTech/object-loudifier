@@ -234,20 +234,26 @@ it('should return the object if already loud', () => {
 it('should throw exception when calling on with a non-string', () => {
   const obj = loudify({});
   expect(() => {
-    obj.$on(1 as any, () => { return; });
+    obj.$on(1 as any, () => {
+      return;
+    });
   }).toThrow();
 });
 
 it('should throw exception when calling on with a reserved property', () => {
   const obj = loudify({});
   expect(() => {
-    obj.$on('$on', () => { return; });
+    obj.$on('$on', () => {
+      return;
+    });
   }).toThrow();
 });
 
 it('should throw exception when calling a nested listener while allowNesting is false', () => {
   const obj = loudify({});
   expect(() => {
-    obj.$on('a.b', () => { return; });
+    obj.$on('a.b', () => {
+      return;
+    });
   }).toThrow();
 });
