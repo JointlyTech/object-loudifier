@@ -148,6 +148,7 @@ The results are the average of 100000 runs.
 | 3 | 1.51 | 155.05 | Object nested assignment with wildcard |
 | 4 | 1.57 | 244.63 | Object nested assignment with wildcard and multiple listeners |
 | 5 | 1.54 | 721.68 | Object assignment with multiple nested properties |
+| 6 | 1.82 | 997.00 | Object assignment with multiple nested properties and wildcard |
 
 Even if the benchmarks show a big difference with a native object, yet the library is capable of easily handling tens of thousands of changes per second.  
 
