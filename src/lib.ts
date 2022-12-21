@@ -1,3 +1,12 @@
+import { defaultOptions, $onDefaultOptions } from './defaults';
+import {
+  emittedMetadata,
+  ListenerFn,
+  Options,
+  $onOptions,
+  LoudObject
+} from './models';
+
 const RESERVED_PROPERTIES = new Set([
   '$on',
   '$off',
@@ -9,35 +18,6 @@ const RESERVED_PROPERTIES = new Set([
   '$propName',
   '$preventBubbling'
 ]);
-
-type Options = {
-  allowNesting: boolean;
-};
-
-const defaultOptions: Options = {
-  allowNesting: false
-};
-
-type $onOptions = {
-  preventBubbling: boolean;
-  once: boolean;
-};
-
-const $onDefaultOptions: $onOptions = {
-  preventBubbling: false,
-  once: false
-};
-
-type emittedMetadata = {
-  isDirty: boolean;
-  originalPropertyName?: string;
-};
-
-type ListenerFn = (
-  value?: unknown,
-  prop?: string,
-  metadata?: emittedMetadata
-) => void;
 
 export const loudify = (
   obj: any,
@@ -69,11 +49,7 @@ export const loudify = (
 
   // Create a loud object for every property of the object if an object itself
   if (options.allowNesting) {
-    Object.keys(obj).forEach((key) => {
-      if (typeof obj[key] === 'object') {
-        obj[key] = loudify(obj[key], options, obj, key);
-      }
-    });
+    applyLoudifyToNestedProperties();
   }
 
   const loudObj = new Proxy(obj, {
@@ -87,7 +63,7 @@ export const loudify = (
       if (typeof prop === 'symbol' || RESERVED_PROPERTIES.has(prop))
         return true;
 
-      // If value is an object, create an r for it.
+      // If value is an object, create a loud object for it.
       if (typeof value === 'object') {
         value = loudify(value, options, target, prop);
       }
@@ -135,32 +111,22 @@ export const loudify = (
     const initialListener = listener;
     // If once is true, create a new listener that will remove itself after being called
     if (onOptions.once) {
-      const newListener = (...args: unknown[]) => {
-        initialListener(...args);
-        loudObj.$off(prop, newListener);
-      };
-      listener = newListener;
+      listener = createOnceListener(initialListener, prop);
     }
     // If preventBubbling is true, create a new listener that will prevent the event from bubbling
     if (onOptions.preventBubbling) {
-      const newListener = (...args: unknown[]) => {
-        initialListener(...args);
-        loudObj.$preventBubbling = true;
-      };
-      listener = newListener;
+      listener = createPreventBubblingListener(initialListener);
     }
 
-    if (!loudObj.$listeners[prop]) {
-      loudObj.$listeners[prop] = [];
-    }
-    loudObj.$listeners[prop].push(listener);
+    createListenersForPropIfNotExists(prop);
+    pushListenerForProp(prop, listener);
   };
   loudObj.$once = (prop: string, listener: ListenerFn) => {
     loudObj.$on(prop, listener, { once: true });
   };
   loudObj.$emit = (prop: string, value: unknown, metadata: emittedMetadata) => {
-    if (loudObj.$listeners[prop]) {
-      loudObj.$listeners[prop].forEach((listen: ListenerFn) =>
+    if (hasListenersForProp(prop)) {
+      getListenersForProp(prop).forEach((listen: ListenerFn) =>
         listen(value, metadata.originalPropertyName || prop, metadata)
       );
     }
@@ -171,22 +137,19 @@ export const loudify = (
       return;
     }
 
-    if (loudObj.$parent)
-      loudObj.$parent.$emit(`${loudObj.$propName}.${prop}`, value, metadata);
+    if (loudObj.$parent) {
+      const parentPropName = `${loudObj.$propName}.${prop}`;
+      loudObj.$parent.$emit(parentPropName, value, metadata);
+    }
     if (!prop.includes('*')) {
-      emitWildcardEventForEachParentMatchingExpression(
-        prop,
-        loudObj.$listeners,
-        loudObj.$emit,
-        value,
-        metadata
-      );
+      emitWildcardEventForEachParentMatchingExpression(prop, value, metadata);
     }
   };
   loudObj.$off = (prop: string, listener: ListenerFn) => {
-    if (loudObj.$listeners[prop]) {
-      loudObj.$listeners[prop] = loudObj.$listeners[prop].filter(
-        (l: ListenerFn) => l !== listener
+    if (hasListenersForProp(prop)) {
+      setListenersForProp(
+        prop,
+        getListenersForProp(prop).filter((l: ListenerFn) => l !== listener)
       );
     }
   };
@@ -200,45 +163,71 @@ export const loudify = (
   });
 
   return loudObj;
-};
 
-// Extract the loudify type
-export type LoudObject<T> = T & {
-  $isLoud: true;
-  $on: (
+  function hasListenersForProp(prop: string) {
+    return loudObj.$listeners[prop] && loudObj.$listeners[prop].length > 0;
+  }
+
+  function getListenersForProp(prop: string) {
+    return loudObj.$listeners[prop];
+  }
+
+  function setListenersForProp(prop: string, listeners: ListenerFn[]) {
+    loudObj.$listeners[prop] = listeners;
+  }
+
+  function applyLoudifyToNestedProperties() {
+    Object.keys(obj).forEach((key) => {
+      if (typeof obj[key] === 'object') {
+        obj[key] = loudify(obj[key], options, obj, key);
+      }
+    });
+  }
+
+  function emitWildcardEventForEachParentMatchingExpression(
     prop: string,
-    listener: ListenerFn,
-    options: Partial<$onOptions>
-  ) => void;
-  $once: (prop: string, listener: ListenerFn) => void;
-  $emit: (prop: string, value: unknown, metadata: emittedMetadata) => void;
-  $off: (prop: string, listener: ListenerFn) => void;
-  $parent?: LoudObject<any>;
-  $propName?: string;
-  $listeners: Record<string, ListenerFn[]>;
-  $preventBubbling: boolean;
-};
-function emitWildcardEventForEachParentMatchingExpression(
-  prop: string,
-  $listeners: LoudObject<unknown>['$listeners'],
-  $emit: LoudObject<unknown>['$emit'],
-  value: unknown,
-  metadata: emittedMetadata
-) {
-  const propParts = prop.split('.');
-  for (let i = propParts.length; i > 0; i--) {
-    const wildcardProp = propParts.slice(0, i).join('.') + '.*';
-    if ($listeners[wildcardProp]) {
-      $emit(wildcardProp, value, {
+    value: unknown,
+    metadata: emittedMetadata
+  ) {
+    const propParts = prop.split('.');
+    for (let i = propParts.length; i > 0; i--) {
+      const wildcardProp = propParts.slice(0, i).join('.') + '.*';
+      if (loudObj.$listeners[wildcardProp]) {
+        loudObj.$emit(wildcardProp, value, {
+          ...metadata,
+          originalPropertyName: prop
+        });
+      }
+    }
+    if (loudObj.$listeners['*']) {
+      loudObj.$emit('*', value, {
         ...metadata,
         originalPropertyName: prop
       });
     }
   }
-  if ($listeners['*']) {
-    $emit('*', value, {
-      ...metadata,
-      originalPropertyName: prop
-    });
+
+  function createPreventBubblingListener(initialListener) {
+    return function newListener(...args: unknown[]) {
+      initialListener(...args);
+      loudObj.$preventBubbling = true;
+    };
   }
-}
+
+  function createOnceListener(initialListener: ListenerFn, prop: string) {
+    return function newListener(...args: unknown[]) {
+      initialListener(...args);
+      loudObj.$off(prop, newListener);
+    };
+  }
+
+  function createListenersForPropIfNotExists(prop: string) {
+    if (!loudObj.$listeners[prop]) {
+      loudObj.$listeners[prop] = [];
+    }
+  }
+
+  function pushListenerForProp(prop: string, listener: ListenerFn) {
+    loudObj.$listeners[prop].push(listener);
+  }
+};
