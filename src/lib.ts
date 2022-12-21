@@ -30,6 +30,7 @@ const $onDefaultOptions = {
 
 type emittedMetadata = {
   isDirty: boolean;
+  originalPropertyName?: string;
 };
 
 type ListenerFn = (
@@ -152,7 +153,7 @@ export const loudify = (
   loudObj.$emit = (prop: string, value: unknown, metadata: emittedMetadata) => {
     if (loudObj.$listeners[prop]) {
       loudObj.$listeners[prop].forEach((listen: ListenerFn) =>
-        listen(value, prop, metadata)
+        listen(value, metadata.originalPropertyName || prop, metadata)
       );
     }
 
@@ -219,8 +220,17 @@ function emitWildcardEventForEachParentMatchingExpression(
   const propParts = prop.split('.');
   for (let i = propParts.length; i > 0; i--) {
     const wildcardProp = propParts.slice(0, i).join('.') + '.*';
-    if ($listeners[wildcardProp])
-      $emit(`${propParts.slice(0, i).join('.')}.*`, value, metadata);
+    if ($listeners[wildcardProp]) {
+      $emit(wildcardProp, value, {
+        ...metadata,
+        originalPropertyName: prop
+      });
+    }
   }
-  if ($listeners['*']) $emit('*', value, metadata);
+  if ($listeners['*']){
+    $emit('*', value, {
+      ...metadata,
+      originalPropertyName: prop
+    });
+  } 
 }
