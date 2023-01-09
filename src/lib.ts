@@ -79,7 +79,8 @@ export const loudify = (
   loudObj.$isLoud = true;
   loudObj.$parent = parent;
   loudObj.$propName = propName;
-  loudObj.$listeners = {} as Record<string, ListenerFn[]>;
+  //loudObj.$listeners = {} as Record<string, ListenerFn[]>;
+  loudObj.$listeners = new Map() as Map<string, ListenerFn[]>;
   loudObj.$preventBubbling = false;
 
   loudObj.$on = (
@@ -165,15 +166,20 @@ export const loudify = (
   return loudObj;
 
   function hasListenersForProp(prop: string) {
-    return loudObj.$listeners[prop] && loudObj.$listeners[prop].length > 0;
+    //return loudObj.$listeners[prop] && loudObj.$listeners[prop].length > 0;
+    return (
+      loudObj.$listeners.has(prop) && loudObj.$listeners.get(prop).length > 0
+    );
   }
 
   function getListenersForProp(prop: string) {
-    return loudObj.$listeners[prop];
+    //return loudObj.$listeners[prop];
+    return loudObj.$listeners.get(prop);
   }
 
   function setListenersForProp(prop: string, listeners: ListenerFn[]) {
-    loudObj.$listeners[prop] = listeners;
+    //loudObj.$listeners[prop] = listeners;
+    loudObj.$listeners.set(prop, listeners);
   }
 
   function applyLoudifyToNestedProperties() {
@@ -192,14 +198,16 @@ export const loudify = (
     const propParts = prop.split('.');
     for (let i = propParts.length; i > 0; i--) {
       const wildcardProp = propParts.slice(0, i).join('.') + '.*';
-      if (loudObj.$listeners[wildcardProp]) {
+      //if (loudObj.$listeners[wildcardProp]) {
+      if (loudObj.$listeners.has(wildcardProp)) {
         loudObj.$emit(wildcardProp, value, {
           ...metadata,
           originalPropertyName: prop
         });
       }
     }
-    if (loudObj.$listeners['*']) {
+    //if (loudObj.$listeners['*']) {
+    if (loudObj.$listeners.has('*')) {
       loudObj.$emit('*', value, {
         ...metadata,
         originalPropertyName: prop
@@ -222,12 +230,16 @@ export const loudify = (
   }
 
   function createListenersForPropIfNotExists(prop: string) {
-    if (!loudObj.$listeners[prop]) {
+    /*if (!loudObj.$listeners[prop]) {
       loudObj.$listeners[prop] = [];
+    }*/
+    if (!loudObj.$listeners.has(prop)) {
+      loudObj.$listeners.set(prop, []);
     }
   }
 
   function pushListenerForProp(prop: string, listener: ListenerFn) {
-    loudObj.$listeners[prop].push(listener);
+    //loudObj.$listeners[prop].push(listener);
+    loudObj.$listeners.get(prop).push(listener);
   }
 };
