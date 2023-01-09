@@ -102,7 +102,7 @@ export const loudify = (
     onOptions = { ...$onDefaultOptions, ...onOptions };
 
     // If propr contains a wildcard and allowNesting is false, throw
-    if (prop.includes('.') && !options.allowNesting) {
+    if (/\./.test(prop) && !options.allowNesting) {
       throw new Error(
         'Cannot listen to a nested event if allowNesting is false'
       );
