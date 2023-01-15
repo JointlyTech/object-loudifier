@@ -11,6 +11,32 @@ You can install it by using the following command:
 npm install @jointly/object-loudifier
 ```
 
+# How to use it?
+
+Just pass any object to the `loudify` function and it will return a loud object.  
+
+```js
+import { loudify } from '@jointly/object-loudifier';
+const obj = loudify({
+  a: {
+    b: {
+      c: {
+        d: 1
+      }
+    }
+  }
+});
+obj.$on('*', (v) => {
+  console.log('* -->', v);
+  return;
+});
+obj.$on('a.*', (v) => {
+  console.log('a.* -->', v);
+  return;
+});
+obj.a.b = 1; // This will cause both console.logs to execute.
+```
+
 # Tests
 
 You can run the tests by using the following command:
@@ -141,14 +167,14 @@ Tested on a MacBook Pro M1 Max (Retina, 16-inch, 2021) with 32GB of RAM.
 The results are in milliseconds.  
 The results are the average of 100000 runs.  
 
-| Benchmark | Without loudify | With loudify | Notes |
-| --- | --- | --- | --- |
-| 1 | 1.73 | 55.72 | Simple object assignment |
-| 2 | 1.38 | 144.11 | Object nested assignment |
-| 3 | 1.51 | 155.05 | Object nested assignment with wildcard |
-| 4 | 1.57 | 244.63 | Object nested assignment with wildcard and multiple listeners |
-| 5 | 1.54 | 721.68 | Object assignment with multiple nested properties |
-| 6 | 1.82 | 997.00 | Object assignment with multiple nested properties and wildcard |
+| Benchmark | Without loudify | With loudify | Notes                                                          |
+| --------- | --------------- | ------------ | -------------------------------------------------------------- |
+| 1         | 1.73            | 55.72        | Simple object assignment                                       |
+| 2         | 1.38            | 144.11       | Object nested assignment                                       |
+| 3         | 1.51            | 155.05       | Object nested assignment with wildcard                         |
+| 4         | 1.57            | 244.63       | Object nested assignment with wildcard and multiple listeners  |
+| 5         | 1.54            | 721.68       | Object assignment with multiple nested properties              |
+| 6         | 1.82            | 997.00       | Object assignment with multiple nested properties and wildcard |
 
 Even if the benchmarks show a big difference with a native object, yet the library is capable of easily handling tens of thousands of changes per second.  
 
