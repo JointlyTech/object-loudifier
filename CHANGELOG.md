@@ -1,3 +1,22 @@
+#### 2.1.1 (2023-01-17)
+
+##### Chores
+
+*  linting ([09e54b63](https://github.com/JointlyTech/object-loudifier/commit/09e54b63d291c6eab9e8780d31186d19846e487e))
+
+##### Documentation Changes
+
+*  added usage example ([44167021](https://github.com/JointlyTech/object-loudifier/commit/44167021b46fa4d5320cb3443655249ef55d192c))
+
+##### Performance Improvements
+
+*  moved listeners from obj to map. +10% ([a97200d8](https://github.com/JointlyTech/object-loudifier/commit/a97200d8e2f38ad796ebbf2b63397ba2ac20e047))
+*  small perf improvements ([6234cf97](https://github.com/JointlyTech/object-loudifier/commit/6234cf97d4b29cedf93a0301203c3382dda739a1))
+
+##### Refactors
+
+*  internal naming and folders refactoring ([0ef8fa83](https://github.com/JointlyTech/object-loudifier/commit/0ef8fa8353e07798b8fb795036c13d2708105f1c))
+
 ### 2.1.0 (2022-12-21)
 
 ##### Chores
