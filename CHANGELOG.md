@@ -1,3 +1,9 @@
+#### 2.1.2 (2023-01-17)
+
+##### Chores
+
+* **deps:**  bump json5 from 2.2.1 to 2.2.3 ([7081adca](https://github.com/JointlyTech/object-loudifier/commit/7081adca5dd53f087b0153bcbf2613d47ceada3f))
+
 #### 2.1.1 (2023-01-17)
 
 ##### Chores
